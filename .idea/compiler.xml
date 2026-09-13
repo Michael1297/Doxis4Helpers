@@ -12,19 +12,14 @@
       <entry name="!?*.clj" />
     </wildcardResourcePatterns>
     <bytecodeTargetLevel>
-      <module name="Archiver" target="11" />
-      <module name="Commons" target="11" />
-      <module name="Documents" target="11" />
-      <module name="Doxis4Helpers" target="11" />
-      <module name="EDM" target="11" />
-      <module name="Notifications" target="11" />
-      <module name="SQL" target="11" />
-      <module name="WebCube" target="11" />
+      <module name="Archiver" target="1.8" />
+      <module name="Commons" target="1.8" />
+      <module name="Documents" target="1.8" />
+      <module name="Doxis4Helpers" target="1.8" />
+      <module name="EDM" target="1.8" />
+      <module name="Notifications" target="1.8" />
+      <module name="SQL" target="1.8" />
+      <module name="WebCube" target="1.8" />
     </bytecodeTargetLevel>
-  </component>
-  <component name="JavacSettings">
-    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="SQL" options="--add-exports java.base/sun.reflect.generics.reflectiveObjects=ALL-UNNAMED" />
-    </option>
   </component>
 </project>
