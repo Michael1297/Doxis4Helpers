@@ -154,6 +154,7 @@ public class ArchiveDocumentToDoxisProcess {
                     checkOldDoc.getPartDocument(0,0).getRawData(),checkOldDoc.getPartDocument(0,0).getFilename(), false);
                 newVersion.commit();
                 log.trace("Doxis4 new version updated");
+                fixForDocsV9(session, session.getDocumentServer(), newVersion);
             }
             return;
         }
@@ -344,6 +345,7 @@ public class ArchiveDocumentToDoxisProcess {
         doxisDocument.commit();
 
         log.debug("File archived as Doxis4 document successfully");
+        fixForDocsV9(session, session.getDocumentServer(), doxisDocument);
         try
         {
             folderNode.getElements().addNew(FMLinkType.DOCUMENT).setLink(doxisDocument.getID());
@@ -379,6 +381,7 @@ public class ArchiveDocumentToDoxisProcess {
                         checkOldDoc.getPartDocument(0,0).getRawData(),checkOldDoc.getPartDocument(0,0).getFilename(), false);
                 newVersion.commit();
                 log.trace("Doxis4 new version updated");
+                fixForDocsV9(session, session.getDocumentServer(), newVersion);
             }
             return;
         }
@@ -774,6 +777,11 @@ public class ArchiveDocumentToDoxisProcess {
         log.trace("Archiving Doxis4 document");
         session.getDocumentServer().archiveDocument(doxisDocument, session);
         log.debug("Doxis4 document archived with the file from Diadoc");
+        try {
+            fixForDocsV9(session, session.getDocumentServer(), doxisDocument);
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+        }
 
 
         if (workFolder != null)
@@ -850,6 +858,7 @@ public class ArchiveDocumentToDoxisProcess {
                 //        checkOldDoc.getPartDocument(0,0).getRawData(),checkOldDoc.getPartDocument(0,0).getFilename(), false);
                 newVersion.commit();
                 log.trace("Doxis4 new version updated");
+                fixForDocsV9(session, session.getDocumentServer(), newVersion);
             }
             return;
         }
@@ -1021,6 +1030,7 @@ public class ArchiveDocumentToDoxisProcess {
         doxisDocument.commit();
 
         log.debug("File archived as Doxis4 document successfully");
+        fixForDocsV9(session, session.getDocumentServer(), doxisDocument);
         try
         {
 
@@ -1134,4 +1144,19 @@ public class ArchiveDocumentToDoxisProcess {
         session.getDocumentServer().archiveDocument(doxisDocument, session);
     }
 */
+
+    public void fixForDocsV9(ISession session, IDocumentServer documentServer, IDocument document) throws Exception {
+        documentServer.checkoutDocument(session, document, "");
+        IDocument newDocVersion = documentServer.getNewDocumentVersion(document, session);
+        if (document.getRepresentationCount() > 0) {
+            byte[] bytes = document.getPartDocument(0, 0).getRawData();
+            String fileName = document.getPartDocument(0, 0).getLongFilename();
+            Descriptors.CopyAllDescriptors(session, document, newDocVersion, true);
+            InformationObjects.SetContentToDocument(session, newDocVersion, bytes, fileName, false);
+
+            newDocVersion.setCurrentVersion(true);
+            if (newDocVersion.isDirty()) newDocVersion.commit();
+            documentServer.checkinDocument(session, document);
+        }
+    }
 }
